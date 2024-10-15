@@ -24,8 +24,16 @@ router.post('/contacts', jsonParser, ctrlWrapper(createContactController));
 
 router.delete('/contacts/:contactId', ctrlWrapper(deleteContactController));
 
-router.put('/contacts/:contactId', ctrlWrapper(upsertContactController));
+router.put(
+  '/contacts/:contactId',
+  jsonParser,
+  ctrlWrapper(upsertContactController),
+);
 
-router.patch('/contacts/:contactId', ctrlWrapper(patchContactController));
+router.patch(
+  '/contacts/:contactId',
+  jsonParser,
+  ctrlWrapper(patchContactController),
+);
 
 export default router;

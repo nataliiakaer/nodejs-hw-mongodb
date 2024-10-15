@@ -3,6 +3,7 @@ import {
   deleteContact,
   getAllContacts,
   getContactById,
+  updateContact,
 } from '../services/contacts.js';
 import createHttpError from 'http-errors';
 
@@ -65,7 +66,15 @@ export const deleteContactController = async (req, res, next) => {
 export const upsertContactController = async (req, res, next) => {
   const { contactId } = req.params;
 
-  const result = await updateStudent(contactId, req.body, {
+  const contact = {
+    name: req.body.name,
+    phoneNumber: req.body.phoneNumber,
+    email: req.body.email,
+    isFavourite: req.body.isFavourite,
+    contactType: req.body.contactType,
+  };
+
+  const result = await updateContact(contactId, contact, {
     upsert: true,
   });
 
@@ -85,7 +94,16 @@ export const upsertContactController = async (req, res, next) => {
 
 export const patchContactController = async (req, res, next) => {
   const { contactId } = req.params;
-  const result = await updateStudent(contactId, req.body);
+  const contact = {
+    name: req.body.name,
+    phoneNumber: req.body.phoneNumber,
+    email: req.body.email,
+    isFavourite: req.body.isFavourite,
+    contactType: req.body.contactType,
+  };
+
+  const result = await updateContact(contactId, contact);
+  console.log(result);
 
   if (!result) {
     next(createHttpError(404, 'Contact not found'));

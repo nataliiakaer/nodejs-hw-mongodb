@@ -12,7 +12,10 @@ import {
 import { ctrlWrapper } from '../utils/ctrlWrapper.js';
 import { isValidId } from '../middlewares/isValidId.js';
 import { validateBody } from '../middlewares/validateBody.js';
-import { createContactSchema, updateSontactSchema } from '../validation/contacts.js';
+import {
+  createContactSchema,
+  updateSontactSchema,
+} from '../validation/contacts.js';
 
 const router = Router();
 const jsonParser = express.json({
@@ -27,7 +30,12 @@ router.get(
   ctrlWrapper(getContactByIdController),
 );
 
-router.post('/contacts', jsonParser, validateBody(createContactSchema), ctrlWrapper(createContactController));
+router.post(
+  '/contacts',
+  jsonParser,
+  validateBody(createContactSchema),
+  ctrlWrapper(createContactController),
+);
 
 router.delete(
   '/contacts/:contactId',

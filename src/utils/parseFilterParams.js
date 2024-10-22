@@ -26,6 +26,6 @@ export const parseFilterParams = (query) => {
   const parsedType = parseType(contactType);
 
   return {
-    contactType: parsedType,
+    type: parsedType,
   };
 };

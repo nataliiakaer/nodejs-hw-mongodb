@@ -16,8 +16,10 @@ import {
   createContactSchema,
   updateSontactSchema,
 } from '../validation/contacts.js';
+import { authenticate } from '../middlewares/authenticate.js';
 
 const router = Router();
+
 const jsonParser = express.json({
   type: ['application/json', 'application/vnd.api+json'],
 });
@@ -33,6 +35,12 @@ router.get(
 router.post(
   '/contacts',
   jsonParser,
+  validateBody(createContactSchema),
+  ctrlWrapper(createContactController),
+);
+
+router.post(
+  '/register',
   validateBody(createContactSchema),
   ctrlWrapper(createContactController),
 );
@@ -58,5 +66,9 @@ router.patch(
   validateBody(updateSontactSchema),
   ctrlWrapper(patchContactController),
 );
+
+router.use(authenticate);
+
+router.get('/', ctrlWrapper(getContactsController));
 
 export default router;

@@ -3,11 +3,16 @@ import { loginUser } from '../services/auth.js';
 import { logoutUser } from '../services/auth.js';
 import { refreshUsersSession } from '../services/auth.js';
 
-
 import { ONE_DAY } from '../constants/index.js';
 
 export const registerUserController = async (req, res) => {
-  const user = await registerUser(req.body);
+  const payload = {
+    name: req.body.name,
+    email: req.body.email,
+    password: req.body.password,
+  };
+
+  const user = await registerUser(payload);
 
   res.status(201).json({
     status: 201,
@@ -17,7 +22,9 @@ export const registerUserController = async (req, res) => {
 };
 
 export const loginUserController = async (req, res) => {
-  const session = await loginUser(req.body);
+  const { email, password } = req.body;
+
+  const session = await loginUser(email, password);
 
   res.cookie('refreshToken', session.refreshToken, {
     httpOnly: true,
@@ -47,7 +54,6 @@ export const logoutUserController = async (req, res) => {
 
   res.status(204).send();
 };
-
 
 const setupSession = (res, session) => {
   res.cookie('refreshToken', session.refreshToken, {

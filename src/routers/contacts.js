@@ -24,17 +24,19 @@ const jsonParser = express.json({
   type: ['application/json', 'application/vnd.api+json'],
 });
 
-router.get('/contacts', ctrlWrapper(getContactsController));
+router.get('/', authenticate, ctrlWrapper(getContactsController));
 
 router.get(
-  '/contacts/:contactId',
+  '/:contactId',
+  authenticate,
   isValidId,
   ctrlWrapper(getContactByIdController),
 );
 
 router.post(
-  '/contacts',
+  '/',
   jsonParser,
+  authenticate,
   validateBody(createContactSchema),
   ctrlWrapper(createContactController),
 );
@@ -45,30 +47,26 @@ router.post(
   ctrlWrapper(createContactController),
 );
 
-router.delete(
-  '/contacts/:contactId',
-  isValidId,
-  ctrlWrapper(deleteContactController),
-);
+router.delete('/:contactId', isValidId, ctrlWrapper(deleteContactController));
 
 router.put(
-  '/contacts/:contactId',
+  '/:contactId',
   isValidId,
   jsonParser,
+  authenticate,
   validateBody(updateSontactSchema),
   ctrlWrapper(upsertContactController),
 );
 
 router.patch(
-  '/contacts/:contactId',
+  '/:contactId',
   isValidId,
   jsonParser,
+  authenticate,
   validateBody(updateSontactSchema),
   ctrlWrapper(patchContactController),
 );
 
-router.use(authenticate);
-
-router.get('/', ctrlWrapper(getContactsController));
+// router.get('/', ctrlWrapper(getContactsController));
 
 export default router;

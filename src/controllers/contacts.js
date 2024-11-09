@@ -15,7 +15,14 @@ export const getContactsController = async (req, res) => {
   const { sortOrder, sortBy } = parseSortParams(req.query);
   const filter = parseFilterParams(req.query);
 
-  const contacts = await getAllContacts({ page, perPage, sortBy, sortOrder, filter });
+  const contacts = await getAllContacts({
+    page,
+    perPage,
+    sortBy,
+    sortOrder,
+    filter,
+    userId: req.user.id,
+  });
 
   res.status(200).json({
     status: 200,
@@ -32,6 +39,10 @@ export const getContactByIdController = async (req, res) => {
     throw createHttpError(404, 'Contact not found');
   }
 
+  if (contact.userId.toString() !== req.user.id.toString()) {
+    return next(new createHttpError.NotFound('Contact not found'));
+  }
+
   res.status(200).json({
     status: 200,
     message: `Successfully found contact with id ${contactId}!`,
@@ -46,6 +57,7 @@ export const createContactController = async (req, res) => {
     email: req.body.email,
     isFavourite: req.body.isFavourite,
     contactType: req.body.contactType,
+    userId: req.user.id,
   };
 
   const result = await createContact(contact);
@@ -60,7 +72,7 @@ export const createContactController = async (req, res) => {
 export const deleteContactController = async (req, res, next) => {
   const { contactId } = req.params;
 
-  const contact = await deleteContact(contactId);
+  const contact = await deleteContact(contactId, req.user._id);
 
   if (!contact) {
     throw createHttpError(404, 'Contact not found');
@@ -78,6 +90,7 @@ export const upsertContactController = async (req, res, next) => {
     email: req.body.email,
     isFavourite: req.body.isFavourite,
     contactType: req.body.contactType,
+    userId: req.user.id,
   };
 
   const result = await updateContact(contactId, contact, {
@@ -105,6 +118,7 @@ export const patchContactController = async (req, res, next) => {
     email: req.body.email,
     isFavourite: req.body.isFavourite,
     contactType: req.body.contactType,
+    userId: req.user.id,
   };
 
   const result = await updateContact(contactId, contact);

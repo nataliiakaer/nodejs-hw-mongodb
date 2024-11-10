@@ -21,7 +21,7 @@ export const getContactsController = async (req, res) => {
     sortBy,
     sortOrder,
     filter,
-    userId: req.user.id,
+    userId: req.user._id,
   });
 
   res.status(200).json({
@@ -33,14 +33,11 @@ export const getContactsController = async (req, res) => {
 
 export const getContactByIdController = async (req, res) => {
   const { contactId } = req.params;
-  const contact = await getContactById(contactId);
+
+  const contact = await getContactById(contactId, req.user._id);
 
   if (!contact) {
     throw createHttpError(404, 'Contact not found');
-  }
-
-  if (contact.userId.toString() !== req.user.id.toString()) {
-    return next(new createHttpError.NotFound('Contact not found'));
   }
 
   res.status(200).json({
@@ -57,7 +54,7 @@ export const createContactController = async (req, res) => {
     email: req.body.email,
     isFavourite: req.body.isFavourite,
     contactType: req.body.contactType,
-    userId: req.user.id,
+    userId: req.user._id,
   };
 
   const result = await createContact(contact);
@@ -90,12 +87,17 @@ export const upsertContactController = async (req, res, next) => {
     email: req.body.email,
     isFavourite: req.body.isFavourite,
     contactType: req.body.contactType,
-    userId: req.user.id,
+    userId: req.user._id,
   };
 
-  const result = await updateContact(contactId, contact, {
-    upsert: true,
-  });
+  const result = await updateContact(
+    contactId,
+    contact,
+    {
+      upsert: true,
+    },
+    req.user._id,
+  );
 
   if (!result) {
     throw createHttpError(404, 'Contact not found');
@@ -118,11 +120,10 @@ export const patchContactController = async (req, res, next) => {
     email: req.body.email,
     isFavourite: req.body.isFavourite,
     contactType: req.body.contactType,
-    userId: req.user.id,
+    userId: req.user._id,
   };
 
-  const result = await updateContact(contactId, contact);
-  console.log(result);
+  const result = await updateContact(contactId, contact, req.user._id);
 
   if (!result) {
     throw createHttpError(404, 'Contact not found');
